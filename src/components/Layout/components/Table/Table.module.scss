@@ -1,0 +1,78 @@
+.wrapper {
+  max-height: 100%;
+  height: 600px;
+}
+
+.table-processes {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  background-color: #f0e6ef;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 8px;
+    text-align: left;
+  }
+
+  thead,
+  tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  tbody {
+    display: block;
+    td {
+      white-space: nowrap; // Không cho xuống dòng
+      overflow: hidden;
+      text-overflow: ellipsis; // Hiển thị "..." nếu quá dài
+    }
+  }
+}
+
+.delete-bnt {
+  border: none;
+  background-color: #fff2c9;
+  margin-top: 5px;
+  margin-left: 100px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.3s;
+  }
+
+  button:hover {
+    background-color: #666;
+  }
+
+  .active {
+    background-color: #00c853; /* Màu xanh lá giống ảnh */
+    font-weight: bold;
+  }
+
+  button:disabled {
+    background-color: #777;
+    cursor: not-allowed;
+  }
+}
+.even {
+  background-color: #f0e6ef;
+}
+
+.odd {
+  background-color: #b8bedd; // Màu giống màu da ngựa
+}
