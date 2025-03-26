@@ -7,7 +7,11 @@ import { faListUl, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const cx = classNames.bind(styles);
 
-function Sidebar() {
+interface sidebarProps {
+  onOpenModal: () => void;
+}
+
+function Sidebar({ onOpenModal }: sidebarProps) {
   return (
     <div className={cx("wrapper")}>
       <div className={cx("processes-item")}>
@@ -17,9 +21,9 @@ function Sidebar() {
         Processes
       </div>
 
-      <div className={cx("add-bnt")}>
+      <button className={cx("add-bnt")} onClick={onOpenModal}>
         <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>
-      </div>
+      </button>
     </div>
   );
 }

@@ -3,7 +3,7 @@
   justify-content: space-between;
   max-width: 100%;
   height: 30px;
-  background-color: #a9def9;
+  background-color: #d1ecff;
 }
 
 .processes-item {
@@ -12,10 +12,13 @@
 
   .filter-processes {
     border: none;
-    background-color: #a9def9;
+    background-color: #d1ecff;
   }
 }
 
 .add-bnt {
   margin: 5px 30px;
+  border: none;
+  background-color: #d1ecff;
+  cursor: pointer;
 }
