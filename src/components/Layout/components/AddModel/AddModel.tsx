@@ -11,6 +11,7 @@ const baseURL = "http://localhost:3000/api/create";
 
 interface ModalProps {
   onClose: () => void;
+  addTask: (newTask: taskType) => void;
 }
 
 interface taskType {
@@ -22,7 +23,7 @@ interface taskType {
   description: string;
 }
 
-function AddModel({ onClose }: ModalProps) {
+function AddModel({ onClose, addTask }: ModalProps) {
   const [task, setTask] = useState<taskType>({
     name_task: "",
     due_date: "",
@@ -60,11 +61,11 @@ function AddModel({ onClose }: ModalProps) {
       const response = await axios.post(baseURL, task);
       console.log("Task created:", response.data);
 
-      alert("Thêm task thành công!");
-      onClose(); // Đóng modal sau khi thêm thành công
+      // Cập nhật UI ngay lập tức
+      addTask(response.data);
+      onClose();
     } catch (error) {
       console.error("Lỗi khi thêm task:", error);
-      alert("Lỗi khi thêm task!");
     }
   };
 

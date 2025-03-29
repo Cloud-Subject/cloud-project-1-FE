@@ -1,41 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import styles from "./Table.module.scss";
 import classNames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { TaskType as taskType } from "../../../../models/typeTask";
+import EditModal from "../EditModal/EditModal";
 
 const cx = classNames.bind(styles);
 
-interface taskType {
-  id: number;
-  name_task: string;
-  due_date: string;
-  priority: number;
-  is_done: boolean;
-  description: string;
+interface TableProps {
+  tasks: taskType[];
+  setTasks: React.Dispatch<React.SetStateAction<taskType[]>>;
+  handleDelete: (id: number) => void;
 }
 
-const baseURL = "http://localhost:3000/api/tasks";
-const baseURL2 = "http://localhost:3000/api/delete";
+const ITEMS_PER_PAGE = 12;
 
-const ITEMS_PER_PAGE = 16;
-
-function Table() {
-  const [tasks, setTasks] = useState<taskType[]>([]);
+function Table({ tasks, handleDelete, setTasks }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    axios
-      .get<taskType[]>(baseURL)
-      .then((response) => {
-        setTasks(response.data);
-      })
-      .catch((error) => {
-        console.error("Can not get data", error);
-      });
-  }, []);
+  const [editingTask, setEditingTask] = useState<taskType | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Tính tổng số trang
   const totalPages = Math.ceil(tasks.length / ITEMS_PER_PAGE);
@@ -44,21 +30,26 @@ function Table() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentData = tasks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Bạn có chắc muốn xóa task này không?")) return;
-
-    try {
-      await axios.delete(`${baseURL2}/${id}`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Cập nhật UI ngay lập tức
-      alert("Xóa task thành công!");
-    } catch (error) {
-      console.error("Lỗi khi xóa task:", error);
-      alert("Lỗi khi xóa task!");
-    }
+  const handleEdit = (task: taskType) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
   };
 
   return (
     <div>
+      {isEditModalOpen && editingTask && (
+        <EditModal
+          task={editingTask}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={(updatedTask) => {
+            setTasks((prevTasks) =>
+              prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+              )
+            );
+          }}
+        />
+      )}
       <div className={cx("wrapper")}>
         <table className={cx("table-processes")}>
           <thead>
@@ -84,15 +75,25 @@ function Table() {
                   <td>{item.due_date}</td>
                   <td>{item.priority}</td>
                   <td>{item.is_done ? "Complete" : "Unfinished"}</td>
-                  <button
-                    className={cx("delete-bnt", {
-                      even: stt % 2 === 0,
-                      odd: stt % 2 !== 0,
-                    })}
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-                  </button>
+                  <td>
+                    <button
+                      className={cx("delete-bnt", {
+                        even: stt % 2 === 0,
+                        odd: stt % 2 !== 0,
+                      })}
+                      onClick={() =>
+                        item.id !== undefined && handleDelete(item.id)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                    </button>
+                    <button
+                      className={cx("edit-bnt")}
+                      onClick={() => handleEdit(item)}
+                    >
+                      <FontAwesomeIcon icon={faPenToSquare}></FontAwesomeIcon>
+                    </button>
+                  </td>
                 </tr>
               );
             })}

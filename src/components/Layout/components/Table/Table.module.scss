@@ -1,78 +1,91 @@
 .wrapper {
-  max-height: 100%;
-  height: 600px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 1500px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-processes {
   width: 100%;
-  max-width: 100%;
-  height: 100%;
-  background-color: #f0e6ef;
   border-collapse: collapse;
+}
 
-  th,
-  td {
-    padding: 8px;
-    text-align: left;
-  }
+.table-processes th,
+.table-processes td {
+  padding: 12px 15px;
+  text-align: center;
+}
 
-  thead,
-  tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-  }
+.table-processes thead {
+  background: #007bff;
+  color: white;
+}
 
-  tbody {
-    display: block;
-    td {
-      white-space: nowrap; // Không cho xuống dòng
-      overflow: hidden;
-      text-overflow: ellipsis; // Hiển thị "..." nếu quá dài
-    }
-  }
+.table-processes tbody tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+.table-processes tbody tr:hover {
+  background: rgba(0, 123, 255, 0.2);
+  cursor: pointer;
+}
+
+.delete-bnt,
+.edit-bnt {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+  margin-top: 5px;
 }
 
 .delete-bnt {
-  border: none;
-  background-color: #fff2c9;
-  margin-top: 5px;
-  margin-left: 100px;
+  background: #ff4d4d;
+  color: white;
+}
+
+.delete-bnt:hover {
+  background: #e60000;
+}
+
+.edit-bnt {
+  background: #28a745;
+  color: white;
+  margin-right: 5px;
+}
+
+.edit-bnt:hover {
+  background: #218838;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 8px;
-  button {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: background 0.3s;
-  }
-
-  button:hover {
-    background-color: #666;
-  }
-
-  .active {
-    background-color: #00c853; /* Màu xanh lá giống ảnh */
-    font-weight: bold;
-  }
-
-  button:disabled {
-    background-color: #777;
-    cursor: not-allowed;
-  }
-}
-.even {
-  background-color: #f0e6ef;
+  margin-top: 15px;
 }
 
-.odd {
-  background-color: #b8bedd; // Màu giống màu da ngựa
+.pagination button {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  background: #007bff;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination .active {
+  background: #0056b3;
 }
