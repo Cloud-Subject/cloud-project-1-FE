@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./DefaultLayout.module.scss";
 import classNames from "classnames/bind";
 import Header from "../components/Header/Header";
@@ -13,6 +13,7 @@ interface DefaultLayoutProps {
 
 function DefaultLayout({ children }: DefaultLayoutProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  useEffect(() => {}, [setIsModalOpen]);
   return (
     <div className={cx("wrapper")}>
       <Header></Header>

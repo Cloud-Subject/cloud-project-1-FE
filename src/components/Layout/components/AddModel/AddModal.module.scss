@@ -11,88 +11,117 @@
 }
 
 .wrapper {
-  height: 500px;
-  width: 600px;
+  width: 500px;
   background-color: white;
-  margin: auto;
-  max-height: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.img-list {
-  height: 20px;
-  width: 20px;
-}
-
-.img-cancel {
-  height: 30px;
-  width: 30px;
-}
-
-.cancel-bnt {
-  background-color: white;
-  border: none;
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
+.container {
+  padding: 20px;
 }
 
 .head-content {
   display: flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
-  padding: 20px 10px;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.img-list {
+  font-size: 20px;
+  color: #555;
+}
+
+.cancel-bnt {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.img-cancel {
+  font-size: 24px;
+  color: #999;
+  transition: color 0.2s ease-in-out;
+}
+
+.img-cancel:hover {
+  color: #333;
 }
 
 .title {
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  flex-grow: 1;
+  text-align: center;
 }
 
 .body-content {
-  padding: 20px 10px;
+  padding: 20px;
 }
 
-.form-content label,
-.form-content input,
-.form-content select {
+.form-content label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
   display: block;
-  margin-bottom: 10px;
+  color: #444;
 }
 
 .form-content input,
-.form-content select {
+.form-content select,
+.description-box {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
   box-sizing: border-box;
+}
+
+.description-box {
+  height: 80px;
+  resize: none;
 }
 
 .check-box {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 .check-box label {
   display: flex;
-  gap: 10px;
   align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #444;
 }
 
 .addElement {
-  background-color: rgb(135, 185, 185);
-  height: 150px;
   display: flex;
   justify-content: center;
+  background: #f9f9f9;
+  padding: 15px;
+  border-top: 1px solid #ddd;
 }
 
 .addElement button {
-  margin-top: 50px;
-  width: 100px;
-  height: 50px;
-  background-color: rgb(57, 155, 57);
-  border-radius: 10px;
+  width: 120px;
+  height: 45px;
+  background: #28a745;
+  border-radius: 5px;
   color: white;
+  font-size: 16px;
   font-weight: bold;
   border: none;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.addElement button:hover {
+  background: #218838;
 }
