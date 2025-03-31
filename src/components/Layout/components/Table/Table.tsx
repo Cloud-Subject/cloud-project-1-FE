@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-
 import styles from "./Table.module.scss";
 import classNames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { TaskType as taskType } from "../../../../models/typeTask";
 import EditModal from "../EditModal/EditModal";
+import { useSearch } from "../SearchContext/SearchContext"; // Import useSearch để lấy searchQuery
 
 const cx = classNames.bind(styles);
 
@@ -19,16 +19,28 @@ const ITEMS_PER_PAGE = 12;
 
 function Table({ tasks, handleDelete, setTasks }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1);
-
   const [editingTask, setEditingTask] = useState<taskType | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const { searchQuery } = useSearch(); // Lấy searchQuery từ context
 
   // Tính tổng số trang
   const totalPages = Math.ceil(tasks.length / ITEMS_PER_PAGE);
 
-  // Lấy dữ liệu của trang hiện tại
+  // Lọc các task dựa trên searchQuery
+  const filteredTasks = tasks.filter((task) => {
+    const lowerSearchQuery = searchQuery.toLowerCase();
+    return (
+      task.name_task.toLowerCase().includes(lowerSearchQuery) ||
+      task.due_date.toLowerCase().includes(lowerSearchQuery)
+    );
+  });
+
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentData = tasks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentData = filteredTasks.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
 
   const handleEdit = (task: taskType) => {
     setEditingTask(task);
@@ -85,13 +97,13 @@ function Table({ tasks, handleDelete, setTasks }: TableProps) {
                         item.id !== undefined && handleDelete(item.id)
                       }
                     >
-                      <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                     <button
                       className={cx("edit-bnt")}
                       onClick={() => handleEdit(item)}
                     >
-                      <FontAwesomeIcon icon={faPenToSquare}></FontAwesomeIcon>
+                      <FontAwesomeIcon icon={faPenToSquare} />
                     </button>
                   </td>
                 </tr>

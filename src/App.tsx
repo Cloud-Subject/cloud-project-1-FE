@@ -14,10 +14,8 @@ const baseURL2 = "http://localhost:3000/api/delete";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const [tasks, setTasks] = useState<taskType[]>([]);
 
-  // Fetch task từ API khi component mount
   useEffect(() => {
     axios
       .get(baseURL)
@@ -25,31 +23,44 @@ function App() {
       .catch((error) => console.error("Cannot fetch tasks", error));
   }, []);
 
-  // Hàm thêm task mới vào danh sách
   const addTask = (newTask: taskType) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("Bạn có chắc muốn xóa task này không?")) return;
-
     try {
       await axios.delete(`${baseURL2}/${id}`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id)); // Cập nhật UI ngay lập tức
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       alert("Xóa task thành công!");
     } catch (error) {
       console.error("Lỗi khi xóa task:", error);
       alert("Lỗi khi xóa task!");
     }
   };
+
+  // Hàm sắp xếp
+  const handleSort = (sortType: string) => {
+    console.log("Sorting by:", sortType);
+    const sortedTasks = [...tasks];
+
+    if (sortType === "due_date_asc") {
+      sortedTasks.sort(
+        (a, b) =>
+          new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+      );
+    } else if (sortType === "priority_asc") {
+      sortedTasks.sort((a, b) => a.priority - b.priority);
+    }
+
+    console.log("Sorted tasks:", sortedTasks);
+    setTasks([...sortedTasks]); // Đảm bảo React nhận diện sự thay đổi
+  };
+
   return (
-    <DefaultLayout onOpenModal={() => setIsModalOpen(true)}>
+    <DefaultLayout onOpenModal={() => setIsModalOpen(true)} onSort={handleSort}>
       <div className={cx("App")}>
-        <Table
-          tasks={tasks}
-          handleDelete={handleDelete}
-          setTasks={setTasks}
-        ></Table>
+        <Table tasks={tasks} handleDelete={handleDelete} setTasks={setTasks} />
         {isModalOpen && (
           <AddModel onClose={() => setIsModalOpen(false)} addTask={addTask} />
         )}
