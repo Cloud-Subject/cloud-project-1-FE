@@ -9,8 +9,10 @@ import axios from "axios";
 import { TaskType as taskType } from "./models/typeTask";
 const cx = classNames.bind(styles);
 
-const baseURL = "http://localhost:3000/api/tasks";
-const baseURL2 = "http://localhost:3000/api/delete";
+const baseURL =
+  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
+const baseURL2 =
+  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks/delete";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

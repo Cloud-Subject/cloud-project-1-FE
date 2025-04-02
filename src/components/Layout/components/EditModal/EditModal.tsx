@@ -7,7 +7,8 @@ import axios from "axios";
 import { TaskType as taskType } from "../../../../models/typeTask";
 
 const cx = classNames.bind(styles);
-const baseURL = "http://localhost:3000/api/update"; // API cập nhật
+const baseURL =
+  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks"; // API cập nhật
 
 interface ModalProps {
   task: taskType;

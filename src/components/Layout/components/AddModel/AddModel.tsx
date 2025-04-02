@@ -7,7 +7,8 @@ import axios from "axios";
 
 const cx = classNames.bind(styles);
 
-const baseURL = "http://localhost:3000/api/create";
+const baseURL =
+  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
 
 interface ModalProps {
   onClose: () => void;
