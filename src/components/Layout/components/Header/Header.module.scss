@@ -1,7 +1,7 @@
 .wrapper {
   height: 50px;
   max-width: 100%;
-  background-color: #7c7c7c;
+  background-color: #7895e2;
   display: flex;
   justify-content: space-between;
 
@@ -17,7 +17,7 @@
   margin-top: 10px;
   height: 30px;
   width: 600px;
-  background-color: #dacdcd;
+  background-color: whitesmoke;
   border-radius: 95px;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
     border: none;
     outline: none;
     height: 50%;
-    background-color: #dacdcd;
+    background-color: whitesmoke;
     padding: 5px;
   }
 
@@ -54,5 +54,5 @@
   background: #9aabde;
   border: 0.1875em solid #838486;
   border-radius: 50%;
-  box-shadow: 0.375em 0.375em 0 0 rgba(15, 28, 63, 0.125);
+  margin: 0px 15px;
 }
