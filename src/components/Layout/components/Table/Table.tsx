@@ -1,162 +1,67 @@
 import React, { useState } from "react";
-
 import styles from "./Table.module.scss";
 import classNames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { TaskType as taskType } from "../../../../models/typeTask";
+import EditModal from "../EditModal/EditModal";
+import { useSearch } from "../SearchContext/SearchContext"; // Import useSearch để lấy searchQuery
 
 const cx = classNames.bind(styles);
 
-const testData = [
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    dueDate: "2025-04-01",
-    priority: "Cao",
-    status: "Đang xử lý",
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    dueDate: "2025-04-05",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 3,
-    name: "Phạm Văn C",
-    dueDate: "2025-04-10",
-    priority: "Thấp",
-    status: "Chờ xử lý",
-  },
-  {
-    id: 4,
-    name: "Lê Thị D",
-    dueDate: "2025-04-15",
-    priority: "Cao",
-    status: "Đang xử lý",
-  },
-  {
-    id: 5,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 6,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 7,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 8,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 9,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 10,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 11,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 12,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 13,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 14,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 15,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 16,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 17,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 18,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-  {
-    id: 19,
-    name: "Hoàng Văn E",
-    dueDate: "2025-04-20",
-    priority: "Trung bình",
-    status: "Hoàn thành",
-  },
-];
+interface TableProps {
+  tasks: taskType[];
+  setTasks: React.Dispatch<React.SetStateAction<taskType[]>>;
+  handleDelete: (id: number) => void;
+}
 
-const ITEMS_PER_PAGE = 16;
+const ITEMS_PER_PAGE = 12;
 
-function Table() {
+function Table({ tasks, handleDelete, setTasks }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingTask, setEditingTask] = useState<taskType | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const { searchQuery } = useSearch(); // Lấy searchQuery từ context
 
   // Tính tổng số trang
-  const totalPages = Math.ceil(testData.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(tasks.length / ITEMS_PER_PAGE);
 
-  // Lấy dữ liệu của trang hiện tại
+  // Lọc các task dựa trên searchQuery
+  const filteredTasks = tasks.filter((task) => {
+    const lowerSearchQuery = searchQuery.toLowerCase();
+    return (
+      task.name_task.toLowerCase().includes(lowerSearchQuery) ||
+      task.due_date.toLowerCase().includes(lowerSearchQuery)
+    );
+  });
+
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentData = testData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentData = filteredTasks.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  const handleEdit = (task: taskType) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
+  };
 
   return (
     <div>
+      {isEditModalOpen && editingTask && (
+        <EditModal
+          task={editingTask}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={(updatedTask) => {
+            setTasks((prevTasks) =>
+              prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+              )
+            );
+          }}
+        />
+      )}
       <div className={cx("wrapper")}>
         <table className={cx("table-processes")}>
           <thead>
@@ -164,7 +69,7 @@ function Table() {
               <th>STT</th>
               <th>Name</th>
               <th>Due date</th>
-              <th>priority</th>
+              <th>Priority</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -178,18 +83,29 @@ function Table() {
                   className={cx({ even: stt % 2 === 0, odd: stt % 2 !== 0 })}
                 >
                   <td>{startIndex + index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>{item.dueDate}</td>
+                  <td>{item.name_task}</td>
+                  <td>{item.due_date}</td>
                   <td>{item.priority}</td>
-                  <td>{item.status}</td>
-                  <button
-                    className={cx("delete-bnt", {
-                      even: stt % 2 === 0,
-                      odd: stt % 2 !== 0,
-                    })}
-                  >
-                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-                  </button>
+                  <td>{item.is_done ? "Complete" : "Unfinished"}</td>
+                  <td>
+                    <button
+                      className={cx("delete-bnt", {
+                        even: stt % 2 === 0,
+                        odd: stt % 2 !== 0,
+                      })}
+                      onClick={() =>
+                        item.id !== undefined && handleDelete(item.id)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                    <button
+                      className={cx("edit-bnt")}
+                      onClick={() => handleEdit(item)}
+                    >
+                      <FontAwesomeIcon icon={faPenToSquare} />
+                    </button>
+                  </td>
                 </tr>
               );
             })}

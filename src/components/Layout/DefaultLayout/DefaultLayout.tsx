@@ -1,27 +1,33 @@
-import React, { useState } from "react";
 import styles from "./DefaultLayout.module.scss";
 import classNames from "classnames/bind";
 import Header from "../components/Header/Header";
 import Sidebar from "../components/Sidebar/Sidebar";
-import AddModel from "../components/AddModel/AddModel";
+import SearchContext from "../components/SearchContext/SearchContext";
+import { useState } from "react";
 
 const cx = classNames.bind(styles);
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
+  onOpenModal: () => void;
+  onSort: (sortType: string) => void; // Truyền hàm sắp xếp từ App
 }
 
-function DefaultLayout({ children }: DefaultLayoutProps) {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+function DefaultLayout({ children, onOpenModal, onSort }: DefaultLayoutProps) {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  console.log("onSort trong DefaultLayout:", onSort);
+
   return (
-    <div className={cx("wrapper")}>
-      <Header></Header>
-      <div className={cx("container")}>
-        <Sidebar onOpenModal={() => setIsModalOpen(true)}></Sidebar>
-        <div className={cx("content")}>{children}</div>
-        {isModalOpen && <AddModel onClose={() => setIsModalOpen(false)} />}
+    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
+      <div className={cx("wrapper")}>
+        <Header />
+        <div className={cx("container")}>
+          <Sidebar onOpenModal={onOpenModal} onSort={onSort} />
+          <div className={cx("content")}>{children}</div>
+        </div>
       </div>
-    </div>
+    </SearchContext.Provider>
   );
 }
 
