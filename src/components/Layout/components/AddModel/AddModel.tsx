@@ -8,7 +8,7 @@ import axios from "axios";
 const cx = classNames.bind(styles);
 
 const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
+  "localhost:9000/tasks";
 
 interface ModalProps {
   onClose: () => void;

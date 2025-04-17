@@ -8,7 +8,7 @@ import { TaskType as taskType } from "../../../../models/typeTask";
 
 const cx = classNames.bind(styles);
 const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks"; // API cập nhật
+  "localhost:9000/tasks"; // API cập nhật
 
 interface ModalProps {
   task: taskType;

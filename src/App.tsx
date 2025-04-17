@@ -1,5 +1,10 @@
 import Table from "./components/Layout/components/Table/Table";
-import { DefaultLayout } from "./components/Layout/exportLayout";
+import {
+  DefaultLayout,
+  LoginLayout,
+  RegisterLayout,
+} from "./components/Layout/exportLayout";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import classNames from "classnames/bind";
 import styles from "./App.module.scss";
@@ -7,7 +12,9 @@ import { useEffect, useState } from "react";
 import AddModel from "./components/Layout/components/AddModel/AddModel";
 import axios from "axios";
 import { TaskType as taskType } from "./models/typeTask";
-
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import PrivateRoute from "./config/PrivateRoute";
 const cx = classNames.bind(styles);
 
 localStorage.setItem(
@@ -16,7 +23,7 @@ localStorage.setItem(
 );
 // Cấu hình axios instance có auth header
 const axiosClient = axios.create({
-  baseURL: "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com",
+  baseURL: "localhost:9000",
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
@@ -68,14 +75,51 @@ function App() {
   };
 
   return (
-    <DefaultLayout onOpenModal={() => setIsModalOpen(true)} onSort={handleSort}>
-      <div className={cx("App")}>
-        <Table tasks={tasks} handleDelete={handleDelete} setTasks={setTasks} />
-        {isModalOpen && (
-          <AddModel onClose={() => setIsModalOpen(false)} addTask={addTask} />
-        )}
-      </div>
-    </DefaultLayout>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <DefaultLayout
+                onOpenModal={() => setIsModalOpen(true)}
+                onSort={handleSort}
+              >
+                <div className={cx("App")}>
+                  <Table
+                    tasks={tasks}
+                    handleDelete={handleDelete}
+                    setTasks={setTasks}
+                  />
+                  {isModalOpen && (
+                    <AddModel
+                      onClose={() => setIsModalOpen(false)}
+                      addTask={addTask}
+                    />
+                  )}
+                </div>
+              </DefaultLayout>
+            </PrivateRoute>
+          }
+        ></Route>
+        <Route
+          path="/login"
+          element={
+            <LoginLayout>
+              <Login></Login>
+            </LoginLayout>
+          }
+        ></Route>
+        <Route
+          path="/register"
+          element={
+            <RegisterLayout>
+              <Register></Register>
+            </RegisterLayout>
+          }
+        ></Route>
+      </Routes>
+    </Router>
   );
 }
 
