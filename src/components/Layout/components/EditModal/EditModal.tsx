@@ -33,8 +33,13 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token"); // Lấy token từ localStorage
     try {
-      await axios.put(`${baseURL}/${task.id}`, editedTask);
+      await axios.put(`${baseURL}/${task.id}`, editedTask, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },
+      });
       alert("Cập nhật thành công!");
       onUpdate(editedTask);
       onClose();
