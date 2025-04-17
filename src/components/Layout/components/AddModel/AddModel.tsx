@@ -8,7 +8,7 @@ import axios from "axios";
 const cx = classNames.bind(styles);
 
 const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
+  "localhost:9000/tasks";
 
 interface ModalProps {
   onClose: () => void;
@@ -24,12 +24,12 @@ interface taskType {
   description: string;
 }
 
-function AddModel({ onClose, addTask }: ModalProps) {
+function AddModal({ onClose, addTask }: ModalProps) {
   const [task, setTask] = useState<taskType>({
     name_task: "",
     due_date: "",
     priority: 1,
-    user_id: 1, // Mặc định ID user (có thể chỉnh lại)
+    user_id: 1, // Có thể chỉnh sau
     is_done: false,
     description: "",
   });
@@ -46,7 +46,6 @@ function AddModel({ onClose, addTask }: ModalProps) {
     }));
   };
 
-  // Xử lý chọn trạng thái (radio button)
   const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask((prev) => ({
       ...prev,
@@ -54,19 +53,22 @@ function AddModel({ onClose, addTask }: ModalProps) {
     }));
   };
 
-  // Gửi dữ liệu lên API khi nhấn SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post(baseURL, task);
+      const response = await axios.post(baseURL, task, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("Task created:", response.data);
-
-      // Cập nhật UI ngay lập tức
       addTask(response.data);
       onClose();
     } catch (error) {
       console.error("Lỗi khi thêm task:", error);
+      alert("Thêm task thất bại. Vui lòng kiểm tra lại.");
     }
   };
 
@@ -83,7 +85,7 @@ function AddModel({ onClose, addTask }: ModalProps) {
           </div>
 
           <div className={cx("body-content")}>
-            <form className={cx("form-content")}>
+            <form className={cx("form-content")} onSubmit={handleSubmit}>
               <label>Name-Processes</label>
               <input
                 type="text"
@@ -102,7 +104,11 @@ function AddModel({ onClose, addTask }: ModalProps) {
                 required
               />
               <label>Priority</label>
-              <select value={task.priority} onChange={handleChange}>
+              <select
+                name="priority"
+                value={task.priority}
+                onChange={handleChange}
+              >
                 <option value={1}>1</option>
                 <option value={2}>2</option>
                 <option value={3}>3</option>
@@ -116,7 +122,7 @@ function AddModel({ onClose, addTask }: ModalProps) {
                     value="true"
                     checked={task.is_done}
                     onChange={handleStatusChange}
-                  />{" "}
+                  />
                   Completed
                 </label>
                 <label>
@@ -124,9 +130,9 @@ function AddModel({ onClose, addTask }: ModalProps) {
                     type="radio"
                     name="is_done"
                     value="false"
-                    checked={task.is_done}
+                    checked={!task.is_done}
                     onChange={handleStatusChange}
-                  />{" "}
+                  />
                   Unfinished
                 </label>
               </div>
@@ -138,16 +144,16 @@ function AddModel({ onClose, addTask }: ModalProps) {
                 value={task.description}
                 onChange={handleChange}
               ></textarea>
+
+              <div className={cx("addElement")}>
+                <button type="submit">SUBMIT</button>
+              </div>
             </form>
           </div>
-        </div>
-
-        <div className={cx("addElement")}>
-          <button onClick={handleSubmit}>SUBMIT</button>
         </div>
       </div>
     </div>
   );
 }
 
-export default AddModel;
+export default AddModal;

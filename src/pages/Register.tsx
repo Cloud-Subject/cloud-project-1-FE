@@ -11,6 +11,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const role = 'user'
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +20,15 @@ const Register = () => {
       alert("Mật khẩu không khớp!");
       return;
     }
-
+    const fullName = username
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
+        "http://localhost:9000/auth/register",
         {
-          username,
+          fullName,
           email,
           password,
+          role
         }
       );
 

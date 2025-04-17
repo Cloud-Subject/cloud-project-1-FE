@@ -8,7 +8,7 @@ import { TaskType as taskType } from "../../../../models/typeTask";
 
 const cx = classNames.bind(styles);
 const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks"; // API cập nhật
+  "localhost:9000/tasks"; // API cập nhật
 
 interface ModalProps {
   task: taskType;
@@ -33,8 +33,13 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token"); // Lấy token từ localStorage
     try {
-      await axios.put(`${baseURL}/${task.id}`, editedTask);
+      await axios.put(`${baseURL}/${task.id}`, editedTask, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },
+      });
       alert("Cập nhật thành công!");
       onUpdate(editedTask);
       onClose();

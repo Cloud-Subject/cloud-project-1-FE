@@ -17,13 +17,14 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3000/auth/login", {
+      const res = await axios.post("http://localhost:9000/auth/login", {
         email,
         password,
       });
 
       // Ví dụ: res.data.token là token trả về từ server
-      if (res.data.token) {
+      if (res.data.accessToken) {
+        localStorage.setItem("user", JSON.stringify(res.data.user)); 
         localStorage.setItem("token", res.data.token);
         navigate("/"); // chuyển hướng về trang chính
       } else {

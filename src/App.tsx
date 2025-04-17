@@ -17,18 +17,26 @@ import Register from "./pages/Register";
 import PrivateRoute from "./config/PrivateRoute";
 const cx = classNames.bind(styles);
 
-const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
-const baseURL2 =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks/delete";
+localStorage.setItem(
+  "token",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGV4YW1wbGUuY29tIiwic3ViIjoiMTU4YWUxODMtNmUxMS00NWFmLWJiMjItOTk2ZmE0N2JmMDEwIiwiaWF0IjoxNzQzODM2MzY3LCJleHAiOjE3NDM4Mzk5Njd9.gTZwLBo4pjgMJq0jgHwDja2uFwx5oiMjiGTp9nA7vv0"
+);
+// Cấu hình axios instance có auth header
+const axiosClient = axios.create({
+  baseURL: "localhost:9000",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+  },
+});
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<taskType[]>([]);
 
   useEffect(() => {
-    axios
-      .get(baseURL)
+    axiosClient
+      .get("/tasks")
       .then((response) => setTasks(response.data))
       .catch((error) => console.error("Cannot fetch tasks", error));
   }, []);
@@ -40,7 +48,7 @@ function App() {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Bạn có chắc muốn xóa task này không?")) return;
     try {
-      await axios.delete(`${baseURL2}/${id}`);
+      await axiosClient.delete(`/tasks/delete/${id}`);
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       alert("Xóa task thành công!");
     } catch (error) {
@@ -49,7 +57,6 @@ function App() {
     }
   };
 
-  // Hàm sắp xếp
   const handleSort = (sortType: string) => {
     console.log("Sorting by:", sortType);
     const sortedTasks = [...tasks];
