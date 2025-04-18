@@ -17,18 +17,22 @@ import Register from "./pages/Register";
 import PrivateRoute from "./config/PrivateRoute";
 const cx = classNames.bind(styles);
 
-const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks";
-const baseURL2 =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks/delete";
+const baseURL = "http://[::1]:9000/tasks";
+const baseURL2 = "http://[::1]:9000/tasks";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<taskType[]>([]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     axios
-      .get(baseURL)
+      .get(baseURL, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Thêm token vào header
+        },
+      })
       .then((response) => setTasks(response.data))
       .catch((error) => console.error("Cannot fetch tasks", error));
   }, []);
@@ -38,9 +42,14 @@ function App() {
   };
 
   const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
     if (!window.confirm("Bạn có chắc muốn xóa task này không?")) return;
     try {
-      await axios.delete(`${baseURL2}/${id}`);
+      await axios.delete(`${baseURL2}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Thêm token vào header
+        },
+      });
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       alert("Xóa task thành công!");
     } catch (error) {
@@ -56,8 +65,7 @@ function App() {
 
     if (sortType === "due_date_asc") {
       sortedTasks.sort(
-        (a, b) =>
-          new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
       );
     } else if (sortType === "priority_asc") {
       sortedTasks.sort((a, b) => a.priority - b.priority);

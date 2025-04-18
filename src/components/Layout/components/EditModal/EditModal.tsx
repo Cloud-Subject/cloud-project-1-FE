@@ -4,20 +4,24 @@ import styles from "./EditModal.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListUl, faXmark } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { TaskType as taskType } from "../../../../models/typeTask";
+import { TaskType, TaskStatus } from "../../../../models/typeTask";
 
 const cx = classNames.bind(styles);
-const baseURL =
-  "http://backend-alb-1497298012.us-east-1.elb.amazonaws.com/tasks"; // API cập nhật
+const baseURL = "http://[::1]:9000/tasks";
 
 interface ModalProps {
-  task: taskType;
+  task: TaskType;
   onClose: () => void;
-  onUpdate: (updatedTask: taskType) => void;
+  onUpdate: (updatedTask: TaskType) => void;
 }
 
 function EditModal({ task, onClose, onUpdate }: ModalProps) {
-  const [editedTask, setEditedTask] = useState<taskType>(task);
+  const [editedTask, setEditedTask] = useState<TaskType>({
+    ...task,
+    dueDate: task.dueDate
+      ? new Date(task.dueDate).toISOString().split("T")[0]
+      : "",
+  });
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -25,18 +29,40 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
     >
   ) => {
     const { name, value } = e.target;
+
     setEditedTask((prev) => ({
       ...prev,
       [name]: name === "priority" ? Number(value) : value,
     }));
   };
 
+  const handleStatusChange = (status: TaskStatus) => {
+    setEditedTask((prev) => ({ ...prev, status }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Không tìm thấy token, vui lòng đăng nhập lại.");
+      return;
+    }
+
     try {
-      await axios.put(`${baseURL}/${task.id}`, editedTask);
+      const requestBody = {
+        ...editedTask,
+        dueDate: new Date(editedTask.dueDate),
+      };
+
+      const response = await axios.put(`${baseURL}/${task.id}`, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       alert("Cập nhật thành công!");
-      onUpdate(editedTask);
+      onUpdate(response.data);
       onClose();
     } catch (error) {
       console.error("Lỗi khi cập nhật:", error);
@@ -46,33 +72,30 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
 
   return (
     <div className={cx("modal-overlay")}>
-      <div className={cx("wrapper")}>
-        <div className={cx("head-content")}>
-          <FontAwesomeIcon
-            icon={faListUl}
-            className={cx("img-list")}
-          ></FontAwesomeIcon>
-          <label className={cx("title")}>Edit Task</label>
-          <button className={cx("cancel-bnt")} onClick={onClose}>
+      <div className={cx("modal")}>
+        <div className={cx("modal-header")}>
+          <FontAwesomeIcon icon={faListUl} className={cx("icon")} />
+          <span className={cx("modal-title")}>Edit Task</span>
+          <button className={cx("close-btn")} onClick={onClose}>
             <FontAwesomeIcon icon={faXmark} />
           </button>
         </div>
 
-        <form className={cx("form-content")} onSubmit={handleSubmit}>
-          <label>Name Processes</label>
+        <form className={cx("modal-body")} onSubmit={handleSubmit}>
+          <label>Title</label>
           <input
             type="text"
-            name="name_task"
-            value={editedTask.name_task}
+            name="title"
+            value={editedTask.title}
             onChange={handleChange}
             required
           />
 
-          <label>Due date</label>
+          <label>Due Date</label>
           <input
             type="date"
-            name="due_date"
-            value={editedTask.due_date}
+            name="dueDate"
+            value={editedTask.dueDate}
             onChange={handleChange}
             required
           />
@@ -82,48 +105,39 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
             name="priority"
             value={editedTask.priority}
             onChange={handleChange}
+            style={{ width: "100%" }}
           >
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
+            <option value={1}>1 - High</option>
+            <option value={2}>2 - Medium</option>
+            <option value={3}>3 - Low</option>
           </select>
 
           <label>Status</label>
-          <div className={cx("check-box")}>
-            <label>
-              <input
-                type="radio"
-                name="is_done"
-                value="true"
-                checked={editedTask.is_done}
-                onChange={() =>
-                  setEditedTask((prev) => ({ ...prev, is_done: true }))
-                }
-              />
-              Completed
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="is_done"
-                value="false"
-                checked={!editedTask.is_done}
-                onChange={() =>
-                  setEditedTask((prev) => ({ ...prev, is_done: false }))
-                }
-              />
-              Unfinished
-            </label>
+          <div className={cx("radio-group")}>
+            {Object.values(TaskStatus).map((status) => (
+              <label key={status} className={cx("radio-item")}>
+                <input
+                  type="radio"
+                  name="status"
+                  value={status}
+                  checked={editedTask.status === status}
+                  onChange={() => handleStatusChange(status)}
+                />
+                {status.replace("_", " ")}
+              </label>
+            ))}
           </div>
 
           <label>Description</label>
           <textarea
             name="description"
-            value={editedTask.description}
+            value={editedTask.description || ""}
             onChange={handleChange}
-          ></textarea>
+          />
 
-          <button type="submit">Save Changes</button>
+          <button type="submit" className={cx("save-btn")}>
+            Save Changes
+          </button>
         </form>
       </div>
     </div>

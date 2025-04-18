@@ -7,10 +7,11 @@ import axios from "axios";
 const cx = classNames.bind(styles);
 
 const Register = () => {
-  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isActive, setIsActive] = useState(true); // có thể ẩn hoặc giữ tuỳ theo mong muốn
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,19 +21,22 @@ const Register = () => {
       return;
     }
 
+    if (!isActive) {
+      alert("Bạn phải kích hoạt tài khoản để đăng ký.");
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          username,
-          email,
-          password,
-        }
-      );
+      const response = await axios.post("http://[::1]:9000/auth/register", {
+        email,
+        password,
+        fullName,
+        role: "user",
+        isActive,
+      });
 
       if (response.status === 201 || response.status === 200) {
         alert("Đăng ký thành công!");
-        // Điều hướng tới login
         window.location.href = "/login";
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,10 +56,9 @@ const Register = () => {
       <form onSubmit={handleRegister} className={cx("form")}>
         <input
           type="text"
-          placeholder="Tên người dùng"
-          value={username}
-          required
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Họ và tên"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
         />
         <input
           type="email"
@@ -78,9 +81,16 @@ const Register = () => {
           required
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <button type="submit" onClick={handleRegister}>
-          Đăng Ký
-        </button>
+        <label className={cx("checkbox-label")}>
+          <input
+            type="checkbox"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+            style={{ paddingTop: 10, margin: 5 }}
+          />
+          Kích hoạt tài khoản
+        </label>
+        <button type="submit">Đăng Ký</button>
       </form>
       <p className={cx("redirect")}>
         Đã có tài khoản? <Link to="/login">Đăng nhập</Link>

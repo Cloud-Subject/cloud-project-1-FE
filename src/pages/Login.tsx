@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import React, { useState } from "react";
 import styles from "./Login.module.scss";
 import classNames from "classnames/bind";
@@ -17,14 +16,15 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3000/auth/login", {
+      const res = await axios.post("http://[::1]:9000/auth/login", {
         email,
         password,
       });
 
-      // Ví dụ: res.data.token là token trả về từ server
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
+      // Lưu token trả về vào localStorage
+      if (res.data.accessToken) {
+        localStorage.setItem("token", res.data.accessToken); // Chú ý là accessToken
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/"); // chuyển hướng về trang chính
       } else {
         alert("Sai thông tin đăng nhập!");
