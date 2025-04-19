@@ -20,6 +20,7 @@ const cx = classNames.bind(styles);
 const baseURL = "http://[::1]:9000/tasks";
 const baseURL2 = "http://[::1]:9000/tasks";
 
+
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<taskType[]>([]);
@@ -58,7 +59,6 @@ function App() {
     }
   };
 
-  // Hàm sắp xếp
   const handleSort = (sortType: string) => {
     console.log("Sorting by:", sortType);
     const sortedTasks = [...tasks];

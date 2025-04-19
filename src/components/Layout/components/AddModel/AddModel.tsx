@@ -9,6 +9,7 @@ const cx = classNames.bind(styles);
 
 const baseURL = "http://[::1]:9000/tasks";
 
+
 interface ModalProps {
   onClose: () => void;
   addTask: (newTask: taskType) => void;
@@ -52,6 +53,7 @@ function AddModal({ onClose, addTask }: ModalProps) {
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
     setTask((prev) => ({
       ...prev,
       status: e.target.value as TaskStatus,
@@ -60,6 +62,7 @@ function AddModal({ onClose, addTask }: ModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -83,6 +86,7 @@ function AddModal({ onClose, addTask }: ModalProps) {
 
     try {
       const response = await axios.post(baseURL, requestPayload, {
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -93,6 +97,7 @@ function AddModal({ onClose, addTask }: ModalProps) {
     } catch (error) {
       console.error("Lỗi khi thêm task:", error);
       alert("Không thể thêm task. Vui lòng thử lại.");
+
     }
   };
 
@@ -171,6 +176,7 @@ function AddModal({ onClose, addTask }: ModalProps) {
             Add Task
           </button>
         </form>
+
       </div>
     </div>
   );

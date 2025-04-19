@@ -13,6 +13,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isActive, setIsActive] = useState(true); // có thể ẩn hoặc giữ tuỳ theo mong muốn
 
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,6 +35,7 @@ const Register = () => {
         role: "user",
         isActive,
       });
+
 
       if (response.status === 201 || response.status === 200) {
         alert("Đăng ký thành công!");

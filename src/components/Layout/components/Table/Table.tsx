@@ -29,10 +29,11 @@ function Table({ tasks, handleDelete, setTasks }: TableProps) {
 
   // Lọc các task dựa trên searchQuery
   const filteredTasks = tasks.filter((task) => {
-    const lowerSearchQuery = searchQuery.toLowerCase();
+    const lowerSearchQuery = searchQuery?.toLowerCase();
     return (
       task.title.toLowerCase().includes(lowerSearchQuery) ||
       task.dueDate.toLowerCase().includes(lowerSearchQuery)
+
     );
   });
 

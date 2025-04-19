@@ -9,6 +9,7 @@ import { TaskType, TaskStatus } from "../../../../models/typeTask";
 const cx = classNames.bind(styles);
 const baseURL = "http://[::1]:9000/tasks";
 
+
 interface ModalProps {
   task: TaskType;
   onClose: () => void;
@@ -60,6 +61,7 @@ function EditModal({ task, onClose, onUpdate }: ModalProps) {
           Authorization: `Bearer ${token}`,
         },
       });
+
 
       alert("Cập nhật thành công!");
       onUpdate(response.data);

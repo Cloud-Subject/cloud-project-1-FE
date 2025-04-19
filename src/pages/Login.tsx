@@ -17,6 +17,7 @@ const Login = () => {
 
     try {
       const res = await axios.post("http://[::1]:9000/auth/login", {
+
         email,
         password,
       });
@@ -25,6 +26,7 @@ const Login = () => {
       if (res.data.accessToken) {
         localStorage.setItem("token", res.data.accessToken); // Chú ý là accessToken
         localStorage.setItem("user", JSON.stringify(res.data.user));
+
         navigate("/"); // chuyển hướng về trang chính
       } else {
         alert("Sai thông tin đăng nhập!");
