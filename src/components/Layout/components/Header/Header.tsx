@@ -8,12 +8,21 @@ import {
   faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSearch } from "../SearchContext/SearchContext";
-
+import { useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 function Header() {
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState<string>("");
   const { setSearchQuery } = useSearch(); // Sử dụng useSearch để set giá trị tìm kiếm
+  const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false); // Trạng thái cho menu
+
+  // Hàm xử lý logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   // Xử lý khi thay đổi input
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +46,11 @@ function Header() {
     setSearchQuery(searchValue); // Thực hiện tìm kiếm khi nhấn nút Search
   };
 
+  // Xử lý khi nhấn vào action để hiển thị menu
+  const handleActionClick = () => {
+    setIsMenuVisible((prev) => !prev); // Toggle menu hiển thị/ẩn
+  };
+
   return (
     <div className={cx("wrapper")}>
       <img src={Logo} alt="Logo" className={cx("Logo")} />
@@ -56,7 +70,16 @@ function Header() {
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </button>
       </div>
-      <div className={cx("action")}></div>
+
+      {/* Action section */}
+      <button className={cx("action")} onClick={handleActionClick}></button>
+
+      {/* Menu Popup */}
+      <div className={cx("menu", { show: isMenuVisible })}>
+        <button className={cx("logout")} onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   );
 }

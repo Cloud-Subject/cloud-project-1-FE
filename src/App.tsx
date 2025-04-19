@@ -17,26 +17,23 @@ import Register from "./pages/Register";
 import PrivateRoute from "./config/PrivateRoute";
 const cx = classNames.bind(styles);
 
-localStorage.setItem(
-  "token",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQGV4YW1wbGUuY29tIiwic3ViIjoiMTU4YWUxODMtNmUxMS00NWFmLWJiMjItOTk2ZmE0N2JmMDEwIiwiaWF0IjoxNzQzODM2MzY3LCJleHAiOjE3NDM4Mzk5Njd9.gTZwLBo4pjgMJq0jgHwDja2uFwx5oiMjiGTp9nA7vv0"
-);
-// Cấu hình axios instance có auth header
-const axiosClient = axios.create({
-  baseURL: "localhost:9000",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-  },
-});
+const baseURL = "http://[::1]:9000/tasks";
+const baseURL2 = "http://[::1]:9000/tasks";
+
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<taskType[]>([]);
 
   useEffect(() => {
-    axiosClient
-      .get("/tasks")
+    const token = localStorage.getItem("token");
+
+    axios
+      .get(baseURL, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Thêm token vào header
+        },
+      })
       .then((response) => setTasks(response.data))
       .catch((error) => console.error("Cannot fetch tasks", error));
   }, []);
@@ -46,9 +43,14 @@ function App() {
   };
 
   const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
     if (!window.confirm("Bạn có chắc muốn xóa task này không?")) return;
     try {
-      await axiosClient.delete(`/tasks/delete/${id}`);
+      await axios.delete(`${baseURL2}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Thêm token vào header
+        },
+      });
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       alert("Xóa task thành công!");
     } catch (error) {
@@ -63,8 +65,7 @@ function App() {
 
     if (sortType === "due_date_asc") {
       sortedTasks.sort(
-        (a, b) =>
-          new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
       );
     } else if (sortType === "priority_asc") {
       sortedTasks.sort((a, b) => a.priority - b.priority);

@@ -7,31 +7,37 @@ import axios from "axios";
 
 const cx = classNames.bind(styles);
 
-const baseURL =
-  "localhost:9000/tasks";
+const baseURL = "http://[::1]:9000/tasks";
+
 
 interface ModalProps {
   onClose: () => void;
   addTask: (newTask: taskType) => void;
 }
 
+export enum TaskStatus {
+  TODO = "TODO",
+  IN_PROGRESS = "IN_PROGRESS",
+  DONE = "DONE",
+}
+
 interface taskType {
-  name_task: string;
-  due_date: string;
+  title: string;
+  description?: string;
+  status?: TaskStatus;
+  dueDate: string;
   priority: number;
-  user_id: number;
-  is_done: boolean;
-  description: string;
+  userId?: string;
 }
 
 function AddModal({ onClose, addTask }: ModalProps) {
   const [task, setTask] = useState<taskType>({
-    name_task: "",
-    due_date: "",
-    priority: 1,
-    user_id: 1, // Có thể chỉnh sau
-    is_done: false,
+    title: "",
     description: "",
+    status: TaskStatus.TODO,
+    dueDate: "",
+    priority: 1,
+    userId: "", // nếu không cần truyền thì giữ rỗng
   });
 
   const handleChange = (
@@ -46,10 +52,11 @@ function AddModal({ onClose, addTask }: ModalProps) {
     }));
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
     setTask((prev) => ({
       ...prev,
-      is_done: e.target.value === "true",
+      status: e.target.value as TaskStatus,
     }));
   };
 
@@ -57,100 +64,119 @@ function AddModal({ onClose, addTask }: ModalProps) {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
+    if (!token || !userData) {
+      alert("Thiếu token hoặc thông tin người dùng. Vui lòng đăng nhập lại.");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    const userId = user.id;
+
+    // Đảm bảo date đúng ISO format
+    const due_Date = new Date(task.dueDate);
+
+    const requestPayload = {
+      ...task,
+      dueDate: due_Date,
+      userId: userId, // gán id từ localStorage
+    };
+
     try {
-      const response = await axios.post(baseURL, task, {
+      const response = await axios.post(baseURL, requestPayload, {
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Task created:", response.data);
+
       addTask(response.data);
       onClose();
     } catch (error) {
       console.error("Lỗi khi thêm task:", error);
-      alert("Thêm task thất bại. Vui lòng kiểm tra lại.");
+      alert("Không thể thêm task. Vui lòng thử lại.");
+
     }
   };
 
   return (
     <div className={cx("modal-overlay")}>
-      <div className={cx("wrapper")}>
-        <div className={cx("container")}>
-          <div className={cx("head-content")}>
-            <FontAwesomeIcon icon={faListUl} className={cx("img-list")} />
-            <label className={cx("title")}>Add Processes</label>
-            <button className={cx("cancel-bnt")} onClick={onClose}>
-              <FontAwesomeIcon icon={faXmark} className={cx("img-cancel")} />
-            </button>
-          </div>
-
-          <div className={cx("body-content")}>
-            <form className={cx("form-content")} onSubmit={handleSubmit}>
-              <label>Name-Processes</label>
-              <input
-                type="text"
-                placeholder="Enter name"
-                name="name_task"
-                value={task.name_task}
-                onChange={handleChange}
-                required
-              />
-              <label>Due date</label>
-              <input
-                type="date"
-                name="due_date"
-                value={task.due_date}
-                onChange={handleChange}
-                required
-              />
-              <label>Priority</label>
-              <select
-                name="priority"
-                value={task.priority}
-                onChange={handleChange}
-              >
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-                <option value={3}>3</option>
-              </select>
-              <label>Status</label>
-              <div className={cx("check-box")}>
-                <label>
-                  <input
-                    type="radio"
-                    name="is_done"
-                    value="true"
-                    checked={task.is_done}
-                    onChange={handleStatusChange}
-                  />
-                  Completed
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="is_done"
-                    value="false"
-                    checked={!task.is_done}
-                    onChange={handleStatusChange}
-                  />
-                  Unfinished
-                </label>
-              </div>
-              <label>Description</label>
-              <textarea
-                name="description"
-                placeholder="Enter description"
-                className={cx("description-box")}
-                value={task.description}
-                onChange={handleChange}
-              ></textarea>
-
-              <div className={cx("addElement")}>
-                <button type="submit">SUBMIT</button>
-              </div>
-            </form>
-          </div>
+      <div className={cx("modal")}>
+        <div className={cx("modal-header")}>
+          <FontAwesomeIcon icon={faListUl} className={cx("icon")} />
+          <h2 className={cx("title")}>Create New Task</h2>
+          <button className={cx("close-button")} onClick={onClose}>
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
         </div>
+
+        <form className={cx("form")} onSubmit={handleSubmit}>
+          <div className={cx("form-group")}>
+            <label>Task Title</label>
+            <input
+              type="text"
+              name="title"
+              value={task.title}
+              onChange={handleChange}
+              placeholder="Enter task title"
+              required
+            />
+          </div>
+
+          <div className={cx("form-group")}>
+            <label>Due Date</label>
+            <input
+              type="date"
+              name="dueDate"
+              value={task.dueDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={cx("form-group")}>
+            <label>Priority</label>
+            <select
+              name="priority"
+              value={task.priority}
+              onChange={handleChange}
+            >
+              <option value={1}>Low</option>
+              <option value={2}>Medium</option>
+              <option value={3}>High</option>
+            </select>
+          </div>
+
+          <div className={cx("form-group")}>
+            <label>Status</label>
+            <select
+              name="status"
+              value={task.status}
+              onChange={handleStatusChange}
+            >
+              <option value={TaskStatus.TODO}>To Do</option>
+              <option value={TaskStatus.IN_PROGRESS}>In Progress</option>
+              <option value={TaskStatus.DONE}>Done</option>
+            </select>
+          </div>
+
+          <div className={cx("form-group")}>
+            <label>Description</label>
+            <textarea
+              name="description"
+              placeholder="Describe the task"
+              value={task.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" className={cx("submit-button")}>
+            Add Task
+          </button>
+        </form>
+
       </div>
     </div>
   );

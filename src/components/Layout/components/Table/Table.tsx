@@ -31,8 +31,9 @@ function Table({ tasks, handleDelete, setTasks }: TableProps) {
   const filteredTasks = tasks.filter((task) => {
     const lowerSearchQuery = searchQuery?.toLowerCase();
     return (
-      task.name_task?.toLowerCase().includes(lowerSearchQuery) ||
-      task.due_date?.toLowerCase().includes(lowerSearchQuery)
+      task.title.toLowerCase().includes(lowerSearchQuery) ||
+      task.dueDate.toLowerCase().includes(lowerSearchQuery)
+
     );
   });
 
@@ -83,10 +84,10 @@ function Table({ tasks, handleDelete, setTasks }: TableProps) {
                   className={cx({ even: stt % 2 === 0, odd: stt % 2 !== 0 })}
                 >
                   <td>{startIndex + index + 1}</td>
-                  <td>{item.name_task}</td>
-                  <td>{item.due_date}</td>
+                  <td>{item.title}</td>
+                  <td>{item.dueDate}</td>
                   <td>{item.priority}</td>
-                  <td>{item.is_done ? "Complete" : "Unfinished"}</td>
+                  <td>{item.status}</td>
                   <td>
                     <button
                       className={cx("delete-bnt", {

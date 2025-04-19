@@ -1,9 +1,15 @@
+export enum TaskStatus {
+  TODO = "TODO",
+  IN_PROGRESS = "IN_PROGRESS",
+  DONE = "DONE",
+}
+
 export interface TaskType {
   id?: number; // id có thể không có khi tạo mới
-  name_task: string;
-  due_date: string;
+  title: string;
+  description?: string;
+  status?: TaskStatus;
+  dueDate?: string; // ISO string
   priority: number;
-  user_id: number;
-  is_done: boolean;
-  description: string;
+  userId?: string;
 }
