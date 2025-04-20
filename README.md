@@ -61,4 +61,4 @@ Bước 1: clone code Font-End từ link https://github.com/Cloud-Subject/cloud-
 Bước 2 : mở terminal/ git bash :
   -- Font-End : + npm i + npm run dev
 
-Bước 4 : copy vào url localhost sau khi chạy lên Google để xem website
+Bước 3 : copy vào url localhost sau khi chạy lên Google để xem website
