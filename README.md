@@ -57,6 +57,7 @@ Cách buld dự án
 B1: clone code Font-End từ link https://github.com/Cloud-Subject/cloud-project-1-FE.git hoặc có thể dowload trực tiếp tại github và giải nén
 B2: clone code Back_End từ link https://github.com/Cloud-Subject/cloud-project-1-BE.git hoặc có thể dowload trực tiếp tại github và giải nén
 B3: Vào thư mục chính clone từ main của git là cloud-project-1-BE sau đó tạo file .env
+
 Bước 4 : mở terminal/ git bash :
 -- Back-End : + npm i + npm run start:dev
 -- Font-End : + npm i + npm run dev
